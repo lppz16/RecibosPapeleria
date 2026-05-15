@@ -369,7 +369,7 @@ function buildReceiptHTML(inv) {
       <div class="receipt-biz">
         <div class="receipt-biz-name">Papelería EH</div>
         <div class="receipt-biz-info">Venecia, Antioquia</div>
-        <div class="receipt-biz-info">📱 3146228336</div>
+        <div class="receipt-biz-info">📱 +57 314 7219317</div>
         <div class="receipt-biz-info">lppz1606@gmail.com</div>
       </div>
     </div>
