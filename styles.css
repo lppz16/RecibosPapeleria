@@ -69,16 +69,11 @@ body {
 }
 
 .logo-mark {
-  width: 42px; height: 42px;
-  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  width: 42px;
+  height: 42px;
+  object-fit: cover;
   border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: var(--black);
   flex-shrink: 0;
-  letter-spacing: -.5px;
 }
 
 .logo-name {
@@ -476,15 +471,18 @@ select {
 }
 
 .receipt-logo {
-  width: 48px; height: 48px;
-  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
   border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: var(--black);
   flex-shrink: 0;
+}
+
+.topbar-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 6px;
 }
 
 .receipt-biz-name {
