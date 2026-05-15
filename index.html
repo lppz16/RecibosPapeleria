@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Papelería EH — Facturación</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- APP -->
+<div class="app" id="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">EH</div>
+      <div class="logo-text">
+        <span class="logo-name">Papelería EH</span>
+        <span class="logo-sub">Sistema de Facturación</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-btn active" data-view="invoice" onclick="switchView('invoice')">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Nueva Factura
+      </button>
+      <button class="nav-btn" data-view="catalog" onclick="switchView('catalog')">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Catálogo
+      </button>
+      <button class="nav-btn" data-view="history" onclick="switchView('history')">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Historial
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="biz-info">
+        <span>📍 Venecia, Antioquia</span>
+        <span>📱 3146228336</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MOBILE TOPBAR -->
+  <header class="topbar">
+    <button class="menu-btn" onclick="toggleSidebar()">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <span class="topbar-title">Papelería EH</span>
+    <div class="topbar-logo">EH</div>
+  </header>
+
+  <!-- OVERLAY -->
+  <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- VIEW: INVOICE -->
+    <section class="view active" id="view-invoice">
+      <div class="view-header">
+        <div>
+          <h1 class="view-title">Nueva Factura</h1>
+          <p class="view-sub" id="factura-num-display">FACT-0001</p>
+        </div>
+        <div class="view-actions">
+          <button class="btn btn-ghost" onclick="clearInvoice()">
+            <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.91"/></svg>
+            Limpiar
+          </button>
+          <button class="btn btn-primary" onclick="printInvoice()">
+            <svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Imprimir PDF
+          </button>
+        </div>
+      </div>
+
+      <div class="invoice-layout">
+        <!-- LEFT: FORM -->
+        <div class="invoice-form-panel">
+
+          <!-- CLIENT INFO -->
+          <div class="card">
+            <div class="card-header">Datos del Cliente</div>
+            <div class="form-grid">
+              <div class="field">
+                <label>Nombre / Razón Social</label>
+                <input type="text" id="client-name" placeholder="Cliente general">
+              </div>
+              <div class="field">
+                <label>CC / NIT</label>
+                <input type="text" id="client-id" placeholder="Opcional">
+              </div>
+              <div class="field">
+                <label>Teléfono</label>
+                <input type="text" id="client-phone" placeholder="Opcional">
+              </div>
+              <div class="field">
+                <label>Fecha</label>
+                <input type="text" id="invoice-date" readonly>
+              </div>
+            </div>
+          </div>
+
+          <!-- ADD PRODUCT -->
+          <div class="card">
+            <div class="card-header">Agregar Producto</div>
+
+            <!-- CATALOG SELECTOR -->
+            <div class="catalog-select-wrap">
+              <label>Seleccionar del Catálogo</label>
+              <div class="catalog-row">
+                <select id="catalog-select">
+                  <option value="">— Elegir producto —</option>
+                </select>
+                <button class="btn btn-sm btn-outline" onclick="addFromCatalog()">Agregar</button>
+              </div>
+            </div>
+
+            <div class="divider-text">— o ingresar manualmente —</div>
+
+            <div class="form-grid">
+              <div class="field field-wide">
+                <label>Descripción</label>
+                <input type="text" id="prod-desc" placeholder="Nombre del producto o servicio">
+              </div>
+              <div class="field">
+                <label>Cantidad</label>
+                <input type="number" id="prod-qty" value="1" min="1">
+              </div>
+              <div class="field">
+                <label>Precio Unitario ($)</label>
+                <input type="number" id="prod-price" placeholder="0" min="0">
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button class="btn btn-outline" onclick="saveProductToCatalog()">
+                <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Guardar en Catálogo
+              </button>
+              <button class="btn btn-primary" onclick="addProduct()">
+                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Agregar a Factura
+              </button>
+            </div>
+          </div>
+
+          <!-- NOTES -->
+          <div class="card">
+            <div class="card-header">Notas / Observaciones</div>
+            <textarea id="invoice-notes" rows="3" placeholder="Gracias por su compra..."></textarea>
+          </div>
+
+          <!-- SAVE INVOICE -->
+          <button class="btn btn-gold btn-block" onclick="saveInvoice()">
+            <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Guardar Factura en Historial
+          </button>
+        </div>
+
+        <!-- RIGHT: PREVIEW -->
+        <div class="invoice-preview-panel">
+          <div class="preview-label">Vista Previa del Recibo</div>
+          <div class="receipt" id="receipt">
+            <div class="receipt-header">
+              <div class="receipt-logo">EH</div>
+              <div class="receipt-biz">
+                <div class="receipt-biz-name">Papelería EH</div>
+                <div class="receipt-biz-info">Venecia, Antioquia</div>
+                <div class="receipt-biz-info">📱 3146228336</div>
+                <div class="receipt-biz-info">lppz1606@gmail.com</div>
+              </div>
+            </div>
+
+            <div class="receipt-divider">✦ ✦ ✦</div>
+
+            <div class="receipt-meta">
+              <div class="meta-row">
+                <span class="meta-label">FACTURA</span>
+                <span class="meta-value" id="r-num">FACT-0001</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-label">FECHA</span>
+                <span class="meta-value" id="r-date">—</span>
+              </div>
+              <div class="meta-row" id="r-client-row">
+                <span class="meta-label">CLIENTE</span>
+                <span class="meta-value" id="r-client">Cliente General</span>
+              </div>
+            </div>
+
+            <div class="receipt-divider">────────────────────</div>
+
+            <table class="receipt-table">
+              <thead>
+                <tr>
+                  <th>DESCRIPCIÓN</th>
+                  <th>CANT</th>
+                  <th>P/U</th>
+                  <th>TOTAL</th>
+                </tr>
+              </thead>
+              <tbody id="receipt-items">
+                <tr class="empty-row">
+                  <td colspan="4">Sin productos aún</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="receipt-divider">────────────────────</div>
+
+            <div class="receipt-totals">
+              <div class="total-row subtotal-row">
+                <span>SUBTOTAL</span>
+                <span id="r-subtotal">$0</span>
+              </div>
+              <div class="total-row grand-row">
+                <span>TOTAL</span>
+                <span id="r-total">$0</span>
+              </div>
+            </div>
+
+            <div class="receipt-divider">────────────────────</div>
+
+            <div class="receipt-notes" id="r-notes-wrap">
+              <p id="r-notes"></p>
+            </div>
+
+            <div class="receipt-footer">
+              <p>¡Gracias por su preferencia!</p>
+              <p>Papelería EH — Venecia, Antioquia</p>
+              <div class="receipt-barcode">
+                <div class="barcode-lines" id="barcode-lines"></div>
+                <div class="barcode-num" id="barcode-num"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: CATALOG -->
+    <section class="view" id="view-catalog">
+      <div class="view-header">
+        <div>
+          <h1 class="view-title">Catálogo de Productos</h1>
+          <p class="view-sub" id="catalog-count">0 productos guardados</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="clearCatalog()">
+          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          Vaciar Catálogo
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="table-wrap">
+          <table class="data-table" id="catalog-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Descripción</th>
+                <th>Precio Unitario</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="catalog-body">
+              <tr><td colspan="4" class="empty-cell">No hay productos en el catálogo.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: HISTORY -->
+    <section class="view" id="view-history">
+      <div class="view-header">
+        <div>
+          <h1 class="view-title">Historial de Facturas</h1>
+          <p class="view-sub" id="history-count">0 facturas guardadas</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="clearHistory()">
+          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+          Vaciar Historial
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="history-search" placeholder="Buscar por número, cliente o fecha..." oninput="filterHistory()">
+        </div>
+      </div>
+
+      <div class="history-grid" id="history-grid">
+        <div class="empty-state">
+          <div class="empty-icon">🧾</div>
+          <p>No hay facturas guardadas aún.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- HISTORY MODAL -->
+<div class="modal-backdrop" id="modal-backdrop" onclick="closeModal()"></div>
+<div class="modal" id="modal">
+  <button class="modal-close" onclick="closeModal()">✕</button>
+  <div class="modal-print-btn">
+    <button class="btn btn-primary" onclick="printModal()">
+      <svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Imprimir
+    </button>
+  </div>
+  <div id="modal-receipt-content"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
